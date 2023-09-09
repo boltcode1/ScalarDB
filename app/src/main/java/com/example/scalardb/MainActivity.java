@@ -17,7 +17,9 @@ import android.widget.Toast;
 import com.example.scalardb.data.MyDbHandler;
 import com.example.scalardb.model.Contact;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,34 +27,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        this.setTitle("Anmol");
+
         setContentView(R.layout.activity_main);
         ImageView AddMeeting = findViewById(R.id.button_add);
         MyDbHandler db = new MyDbHandler(MainActivity.this);
 
-//        Contact anmol = new Contact();
-//        anmol.setName("anmol");
-//        anmol.setStart_time("1:00");
-//        anmol.setEnd_time("4:00");
-//
-//        db.addContact(anmol);
-//
-//        Contact aviral = new Contact();
-//        aviral.setName("Aviral");
-//        aviral.setStart_time("4:00");
-//        aviral.setEnd_time("6:00");
-//
-//        db.addContact(aviral);
-//
-//        Contact aqsa = new Contact();
-//        aqsa.setName("Aqsa");
-//        aqsa.setStart_time("6:00");
-//        aqsa.setEnd_time("8:00");
-//
-//        db.addContact(aqsa);
-
-
         ArrayList<String> contacts = new ArrayList<>();
         listView = findViewById(R.id.listView);
+
         //Getting all entries
         List<Contact> allContacts = db.getAllContacts();
         for (Contact contact: allContacts){
@@ -97,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
                         for (Contact contact: allContacts){
                             contacts.add(contact.getId() + "\n" + contact.getName() + "\n" + "Start Time: " + contact.getStart_time() + "\n" + "End Time: " + contact.getEnd_time());
                         }
-//                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, contacts);
                         listView.setAdapter(arrayAdapter);
                     }
                 });
@@ -111,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-
         Log.d("Number of Entries: ", ""+db.getCount());
     }
 }

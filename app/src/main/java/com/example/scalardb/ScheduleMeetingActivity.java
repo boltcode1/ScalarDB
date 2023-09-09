@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +17,11 @@ import android.widget.Toast;
 import com.example.scalardb.data.MyDbHandler;
 import com.example.scalardb.model.Contact;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class ScheduleMeetingActivity extends AppCompatActivity {
     Button SetDate;
@@ -41,7 +45,7 @@ public class ScheduleMeetingActivity extends AppCompatActivity {
         Save = findViewById(R.id.save);
         Title = findViewById(R.id.et_name);
 
-        final Intent intent = getIntent();
+
 
         SetDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,22 +65,7 @@ public class ScheduleMeetingActivity extends AppCompatActivity {
                             }
                         }, mHour, mMinute, true);
                 picker.show();
-//                final Calendar cldr = Calendar.getInstance();
-//                int day = cldr.get(Calendar.DAY_OF_MONTH);
-//                int month = cldr.get(Calendar.MONTH);
-//                int year = cldr.get(Calendar.YEAR);
-//                picker = new DatePickerDialog(ScheduleMeetingActivity.this,
-//                        new DatePickerDialog.OnDateSetListener() {
-//                            @Override
-//                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                                SetDate.setVisibility(View.GONE);
-//                                SelectedDate.setVisibility(View.VISIBLE);
-//                                SelectedDate.setText("DATE: "+ dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-//                            }
-//                        }, year, month, day);
-//                picker.show();
             }
-
 
         });
 
@@ -88,7 +77,6 @@ public class ScheduleMeetingActivity extends AppCompatActivity {
                 int mHour = c.get(Calendar.HOUR_OF_DAY);
                 int mMinute = c.get(Calendar.MINUTE);
 
-                // Launch Time Picker Dialog
                 TimePickerDialog timePickerDialog = new TimePickerDialog(ScheduleMeetingActivity.this,
                         new TimePickerDialog.OnTimeSetListener() {
 
@@ -120,7 +108,60 @@ public class ScheduleMeetingActivity extends AppCompatActivity {
                     aqsa.setStart_time(SelectedDate.getText().toString());
                     aqsa.setEnd_time(SelectTime.getText().toString());
 
-                    db.addContact(aqsa);
+                    String startTime = aqsa.getStart_time();
+                    String endTime = aqsa.getEnd_time();
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    Date d1 = null;
+                    try {
+                        d1 = sdf.parse(startTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    Date d2 = null;
+                    try {
+                        d2 = sdf.parse(endTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    assert d2 != null;
+                    assert d1 != null;
+
+                    Boolean b = true;
+                    List<Contact> allContacts = db.getAllContacts();
+                    for (Contact contact: allContacts){
+                        Log.d("list", "Id: "+ contact.getId() + "\n" +
+                                "Name: "+ contact.getName() + "\n" +
+                                "start: "+ contact.getStart_time() + "\n" +
+                                "end: "+ contact.getEnd_time());
+
+                        String startTime2 = contact.getStart_time();
+                        String endTime2 = contact.getEnd_time();
+                        SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+                        Date dc1 = null;
+                        try {
+                            dc1 = sdf2.parse(startTime2);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        Date dc2 = null;
+                        try {
+                            dc2 = sdf2.parse(endTime2);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        long elapsed1 = dc1.getTime() - d2.getTime();
+                        long elapsed2 = d1.getTime() - dc2.getTime();
+
+                        if(!(elapsed1 >= 0 || elapsed2 >= 0)) {
+                            b = false;
+                            Toast.makeText(ScheduleMeetingActivity.this, "Interview clashed with id" + contact.getId(), Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+
+                    if(b)
+                        db.addContact(aqsa);
                     Intent intent = new Intent(ScheduleMeetingActivity.this, MainActivity.class);
                     startActivity(intent);
                 }

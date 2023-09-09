@@ -29,7 +29,6 @@ public class MyDbHandler extends SQLiteOpenHelper {
         db.execSQL(create);
     }
 
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
