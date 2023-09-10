@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 //        this.setTitle("Anmol");
 
         setContentView(R.layout.activity_main);
+
         ImageView AddMeeting = findViewById(R.id.button_add);
         MyDbHandler db = new MyDbHandler(MainActivity.this);
 
